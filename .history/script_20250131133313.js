@@ -112,10 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (citizenship === "rwandan") {
         const idNumber = form.elements["idNumber"].value;
         if (!idNumber || idNumber.length !== 16 || !/^\d+$/.test(idNumber)) {
-          showNotification(
-            "Please enter a valid 16-digit National ID number",
-            false
-          );
+          showNotification("Please enter a valid 16-digit National ID number", false);
           return;
         }
       } else if (citizenship === "foreigner") {
@@ -135,10 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
       loadingOverlay.classList.remove("hidden");
 
       // Update the email message to include ID/Passport information
-      const idInfo =
-        citizenship === "rwandan"
-          ? `National ID: ${formObject.idNumber}`
-          : `Passport Number: ${formObject.passport}`;
+      const idInfo = citizenship === "rwandan" 
+        ? `National ID: ${formObject.idNumber}`
+        : `Passport Number: ${formObject.passport}`;
 
       console.log("Sending admin email...");
       const adminResponse = await emailjs.send(

@@ -9,10 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const citizenshipSelect = document.getElementById("citizenship");
   const importPurposeSelect = document.getElementById("importPurpose");
   const loadingOverlay = document.getElementById("loadingOverlay");
-  const idNumberContainer = document.getElementById("idNumberContainer");
-  const passportContainer = document.getElementById("passportContainer");
-  const idNumberInput = document.getElementById("idNumber");
-  const passportInput = document.getElementById("passport");
 
   if (!loadingOverlay) {
     console.error("Loading overlay not found!");
@@ -55,32 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Handle citizenship selection
-  if (citizenshipSelect) {
-    citizenshipSelect.addEventListener("change", function () {
-      if (this.value === "rwandan") {
-        idNumberContainer.classList.remove("hidden");
-        passportContainer.classList.add("hidden");
-        idNumberInput.required = true;
-        passportInput.required = false;
-        passportInput.value = "";
-      } else if (this.value === "foreigner") {
-        idNumberContainer.classList.add("hidden");
-        passportContainer.classList.remove("hidden");
-        idNumberInput.required = false;
-        passportInput.required = true;
-        idNumberInput.value = "";
-      } else {
-        idNumberContainer.classList.add("hidden");
-        passportContainer.classList.add("hidden");
-        idNumberInput.required = false;
-        passportInput.required = false;
-        idNumberInput.value = "";
-        passportInput.value = "";
-      }
-    });
-  }
-
   // Form submission
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -91,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const email = form.elements["email"].value;
       const phone = form.elements["phone"].value;
       const tinNumber = form.elements["tinNumber"].value;
-      const citizenship = form.elements["citizenship"].value;
 
       if (!email) {
         showNotification("Please enter an email address", false);
@@ -108,24 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // Add ID validation
-      if (citizenship === "rwandan") {
-        const idNumber = form.elements["idNumber"].value;
-        if (!idNumber || idNumber.length !== 16 || !/^\d+$/.test(idNumber)) {
-          showNotification(
-            "Please enter a valid 16-digit National ID number",
-            false
-          );
-          return;
-        }
-      } else if (citizenship === "foreigner") {
-        const passport = form.elements["passport"].value;
-        if (!passport) {
-          showNotification("Please enter a valid Passport number", false);
-          return;
-        }
-      }
-
       // Collect form data
       const formData = new FormData(form);
       const formObject = Object.fromEntries(formData.entries());
@@ -134,28 +85,23 @@ document.addEventListener("DOMContentLoaded", function () {
       // Show loading overlay
       loadingOverlay.classList.remove("hidden");
 
-      // Update the email message to include ID/Passport information
-      const idInfo =
-        citizenship === "rwandan"
-          ? `National ID: ${formObject.idNumber}`
-          : `Passport Number: ${formObject.passport}`;
-
       console.log("Sending admin email...");
       const adminResponse = await emailjs.send(
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "New RICA Import Permit Application",
           to_email: "p.touko@irembo.com",
-          reply_to: formObject.email,
+          subject: "🔔 New RICA Import Permit Application",
           message: `
-New application received from ${formObject.email}
+RICA Import Permit Application Details
+------------------------------------
+
+Applicant Information:
+Email: ${formObject.email}
+Phone: +250${formObject.phone}
 
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
-- ${idInfo}
-- Phone: +250${formObject.phone}
-- Email: ${formObject.email}
 - Province: ${formObject.ownerProvince}
 
 Business Details:
@@ -171,60 +117,60 @@ Product Information:
 - Weight: ${formObject.weight} ${formObject.weightUnit}
 - Quantity: ${formObject.quantity}
 - Description: ${formObject.productDescription}
-`,
+
+This is an automated message from the RICA Import Permit System.`,
         }
       );
+
+      // Log the response for debugging
       console.log(
-        "Full admin email response:",
-        JSON.stringify(adminResponse, null, 2)
+        "Admin email status:",
+        adminResponse.status,
+        adminResponse.text
       );
 
-      console.log("Sending user email...");
+      // Send confirmation to user
+      console.log("Sending user confirmation email...");
       const userResponse = await emailjs.send(
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject:
-            "[IMPORTANT] Your RICA Import Permit Application Confirmation",
           to_email: formObject.email,
-          reply_to: "p.touko@irembo.com",
+          subject: "✅ RICA Import Permit - Application Received",
           message: `
-Dear Applicant,
+Dear Valued Applicant,
 
-Thank you for submitting your RICA Import Permit application. Here are your application details:
+We have successfully received your RICA Import Permit application. 
 
-Business Owner Details:
-- Citizenship: ${formObject.citizenship}
-- ${idInfo}
-- Phone: +250${formObject.phone}
-- Email: ${formObject.email}
-- Province: ${formObject.ownerProvince}
+Application Summary:
+------------------
+Company Name: ${formObject.companyName}
+TIN Number: ${formObject.tinNumber}
+Business Type: ${formObject.businessType}
 
-Business Details:
-- Business Type: ${formObject.businessType}
-- Company Name: ${formObject.companyName}
-- TIN Number: ${formObject.tinNumber}
-- Registration Date: ${formObject.registrationDate}
-- Business Province: ${formObject.businessProvince}
-
-Product Information:
-- Purpose of Importation: ${formObject.importPurpose}
-- Product Category: ${formObject.productCategory}
+Product Details:
+- Category: ${formObject.productCategory}
 - Weight: ${formObject.weight} ${formObject.weightUnit}
 - Quantity: ${formObject.quantity}
-- Description: ${formObject.productDescription}
 
-Your application has been received and is being processed. We will contact you if we need any additional information.
+Next Steps:
+1. Our team will review your application
+2. You may be contacted if additional information is needed
+3. The final decision will be communicated to this email address
+
+Please save this email for your records. If you have any questions, please contact our support team.
+
+Reference Number: RICA-${Date.now().toString(36)}
 
 Best regards,
 RICA Import Permit Team
-`,
+--------------------
+This is an automated message. Please do not reply to this email.`,
         }
       );
-      console.log(
-        "Full user email response:",
-        JSON.stringify(userResponse, null, 2)
-      );
+
+      // Log the response for debugging
+      console.log("User email status:", userResponse.status, userResponse.text);
 
       console.log("Checking email status...");
       if (adminResponse.status === 200 && userResponse.status === 200) {

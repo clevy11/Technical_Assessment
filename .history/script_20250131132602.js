@@ -9,10 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const citizenshipSelect = document.getElementById("citizenship");
   const importPurposeSelect = document.getElementById("importPurpose");
   const loadingOverlay = document.getElementById("loadingOverlay");
-  const idNumberContainer = document.getElementById("idNumberContainer");
-  const passportContainer = document.getElementById("passportContainer");
-  const idNumberInput = document.getElementById("idNumber");
-  const passportInput = document.getElementById("passport");
 
   if (!loadingOverlay) {
     console.error("Loading overlay not found!");
@@ -55,32 +51,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Handle citizenship selection
-  if (citizenshipSelect) {
-    citizenshipSelect.addEventListener("change", function () {
-      if (this.value === "rwandan") {
-        idNumberContainer.classList.remove("hidden");
-        passportContainer.classList.add("hidden");
-        idNumberInput.required = true;
-        passportInput.required = false;
-        passportInput.value = "";
-      } else if (this.value === "foreigner") {
-        idNumberContainer.classList.add("hidden");
-        passportContainer.classList.remove("hidden");
-        idNumberInput.required = false;
-        passportInput.required = true;
-        idNumberInput.value = "";
-      } else {
-        idNumberContainer.classList.add("hidden");
-        passportContainer.classList.add("hidden");
-        idNumberInput.required = false;
-        passportInput.required = false;
-        idNumberInput.value = "";
-        passportInput.value = "";
-      }
-    });
-  }
-
   // Form submission
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -91,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const email = form.elements["email"].value;
       const phone = form.elements["phone"].value;
       const tinNumber = form.elements["tinNumber"].value;
-      const citizenship = form.elements["citizenship"].value;
 
       if (!email) {
         showNotification("Please enter an email address", false);
@@ -108,24 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // Add ID validation
-      if (citizenship === "rwandan") {
-        const idNumber = form.elements["idNumber"].value;
-        if (!idNumber || idNumber.length !== 16 || !/^\d+$/.test(idNumber)) {
-          showNotification(
-            "Please enter a valid 16-digit National ID number",
-            false
-          );
-          return;
-        }
-      } else if (citizenship === "foreigner") {
-        const passport = form.elements["passport"].value;
-        if (!passport) {
-          showNotification("Please enter a valid Passport number", false);
-          return;
-        }
-      }
-
       // Collect form data
       const formData = new FormData(form);
       const formObject = Object.fromEntries(formData.entries());
@@ -133,12 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Show loading overlay
       loadingOverlay.classList.remove("hidden");
-
-      // Update the email message to include ID/Passport information
-      const idInfo =
-        citizenship === "rwandan"
-          ? `National ID: ${formObject.idNumber}`
-          : `Passport Number: ${formObject.passport}`;
 
       console.log("Sending admin email...");
       const adminResponse = await emailjs.send(
@@ -153,7 +98,6 @@ New application received from ${formObject.email}
 
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
-- ${idInfo}
 - Phone: +250${formObject.phone}
 - Email: ${formObject.email}
 - Province: ${formObject.ownerProvince}
@@ -195,7 +139,6 @@ Thank you for submitting your RICA Import Permit application. Here are your appl
 
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
-- ${idInfo}
 - Phone: +250${formObject.phone}
 - Email: ${formObject.email}
 - Province: ${formObject.ownerProvince}
