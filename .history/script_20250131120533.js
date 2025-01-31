@@ -90,18 +90,53 @@ document.addEventListener("DOMContentLoaded", function () {
         "service_5t0h6p1",
         "template_s0r60zg",
         {
+          subject: "New RICA Import Permit Application",
           to_email: "p.touko@irembo.com",
-          subject: "🔔 New RICA Import Permit Application",
+          reply_to: formObject.email,
           message: `
-RICA Import Permit Application Details
-------------------------------------
-
-Applicant Information:
-Email: ${formObject.email}
-Phone: +250${formObject.phone}
+New application received from ${formObject.email}
 
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
+- Phone: +250${formObject.phone}
+- Email: ${formObject.email}
+- Province: ${formObject.ownerProvince}
+
+Business Details:
+- Business Type: ${formObject.businessType}
+- Company Name: ${formObject.companyName}
+- TIN Number: ${formObject.tinNumber}
+- Registration Date: ${formObject.registrationDate}
+- Business Province: ${formObject.businessProvince}
+
+Product Information:
+- Purpose of Importation: ${formObject.importPurpose}
+- Product Category: ${formObject.productCategory}
+- Weight: ${formObject.weight} ${formObject.weightUnit}
+- Quantity: ${formObject.quantity}
+- Description: ${formObject.productDescription}
+`,
+        }
+      );
+      console.log("Full admin email response:", JSON.stringify(adminResponse, null, 2));
+
+      console.log("Sending user email...");
+      const userResponse = await emailjs.send(
+        "service_5t0h6p1",
+        "template_s0r60zg",
+        {
+          subject: "[IMPORTANT] Your RICA Import Permit Application Confirmation",
+          to_email: formObject.email,
+          reply_to: "p.touko@irembo.com",
+          message: `
+Dear Applicant,
+
+Thank you for submitting your RICA Import Permit application. Here are your application details:
+
+Business Owner Details:
+- Citizenship: ${formObject.citizenship}
+- Phone: +250${formObject.phone}
+- Email: ${formObject.email}
 - Province: ${formObject.ownerProvince}
 
 Business Details:
@@ -118,59 +153,14 @@ Product Information:
 - Quantity: ${formObject.quantity}
 - Description: ${formObject.productDescription}
 
-This is an automated message from the RICA Import Permit System.`,
-        }
-      );
-
-      // Log the response for debugging
-      console.log(
-        "Admin email status:",
-        adminResponse.status,
-        adminResponse.text
-      );
-
-      // Send confirmation to user
-      console.log("Sending user confirmation email...");
-      const userResponse = await emailjs.send(
-        "service_5t0h6p1",
-        "template_s0r60zg",
-        {
-          to_email: formObject.email,
-          subject: "✅ RICA Import Permit - Application Received",
-          message: `
-Dear Valued Applicant,
-
-We have successfully received your RICA Import Permit application. 
-
-Application Summary:
-------------------
-Company Name: ${formObject.companyName}
-TIN Number: ${formObject.tinNumber}
-Business Type: ${formObject.businessType}
-
-Product Details:
-- Category: ${formObject.productCategory}
-- Weight: ${formObject.weight} ${formObject.weightUnit}
-- Quantity: ${formObject.quantity}
-
-Next Steps:
-1. Our team will review your application
-2. You may be contacted if additional information is needed
-3. The final decision will be communicated to this email address
-
-Please save this email for your records. If you have any questions, please contact our support team.
-
-Reference Number: RICA-${Date.now().toString(36)}
+Your application has been received and is being processed. We will contact you if we need any additional information.
 
 Best regards,
 RICA Import Permit Team
---------------------
-This is an automated message. Please do not reply to this email.`,
+`,
         }
       );
-
-      // Log the response for debugging
-      console.log("User email status:", userResponse.status, userResponse.text);
+      console.log("Full user email response:", JSON.stringify(userResponse, null, 2));
 
       console.log("Checking email status...");
       if (adminResponse.status === 200 && userResponse.status === 200) {
