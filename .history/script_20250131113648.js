@@ -90,11 +90,10 @@ document.addEventListener("DOMContentLoaded", function () {
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "New RICA Import Permit Application",
-          from_name: "RICA Import Permit System",
           to_email: "p.touko@irembo.com",
-          reply_to: formObject.email,
-          message: `
+          subject: "New RICA Import Permit Application",
+          message: `New application received from ${formObject.email}
+
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
 - Phone: +250${formObject.phone}
@@ -113,26 +112,22 @@ Product Information:
 - Product Category: ${formObject.productCategory}
 - Weight: ${formObject.weight} ${formObject.weightUnit}
 - Quantity: ${formObject.quantity}
-- Description: ${formObject.productDescription}
-`,
+- Description: ${formObject.productDescription}`,
         }
       );
-      console.log("Admin email sent successfully:", adminResponse);
 
       console.log("Sending user email...");
       const userResponse = await emailjs.send(
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "Your RICA Import Permit Application",
-          from_name: "RICA Import Permit System",
           to_email: formObject.email,
-          reply_to: "p.touko@irembo.com",
-          message: `
-Dear Applicant,
+          subject: "RICA Import Permit - Application Received",
+          message: `Dear Applicant,
 
-Thank you for submitting your RICA Import Permit application. Here are your application details:
+Your RICA Import Permit application has been received successfully.
 
+Application Details:
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
 - Phone: +250${formObject.phone}
@@ -153,14 +148,14 @@ Product Information:
 - Quantity: ${formObject.quantity}
 - Description: ${formObject.productDescription}
 
-Your application has been received and is being processed. We will contact you if we need any additional information.
+We will review your application and contact you if we need any additional information.
 
 Best regards,
 RICA Import Permit Team
-`,
+
+Note: If you did not submit this application, please contact us immediately.`,
         }
       );
-      console.log("User email sent successfully:", userResponse);
 
       console.log("Checking email status...");
       if (adminResponse.status === 200 && userResponse.status === 200) {

@@ -90,10 +90,11 @@ document.addEventListener("DOMContentLoaded", function () {
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "New RICA Import Permit Application",
           from_name: "RICA Import Permit System",
+          to_name: "Administrator",
           to_email: "p.touko@irembo.com",
           reply_to: formObject.email,
+          subject: "New RICA Import Permit Application",
           message: `
 Business Owner Details:
 - Citizenship: ${formObject.citizenship}
@@ -115,6 +116,11 @@ Product Information:
 - Quantity: ${formObject.quantity}
 - Description: ${formObject.productDescription}
 `,
+          template_params: {
+            email_service: "gmail",
+            email_type: "notification",
+            priority: "high",
+          },
         }
       );
       console.log("Admin email sent successfully:", adminResponse);
@@ -124,12 +130,13 @@ Product Information:
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "Your RICA Import Permit Application",
           from_name: "RICA Import Permit System",
+          to_name: formObject.email.split("@")[0],
           to_email: formObject.email,
           reply_to: "p.touko@irembo.com",
+          subject: "Your RICA Import Permit Application Confirmation",
           message: `
-Dear Applicant,
+Dear ${formObject.email.split("@")[0]},
 
 Thank you for submitting your RICA Import Permit application. Here are your application details:
 
@@ -158,6 +165,11 @@ Your application has been received and is being processed. We will contact you i
 Best regards,
 RICA Import Permit Team
 `,
+          template_params: {
+            email_service: "gmail",
+            email_type: "confirmation",
+            priority: "high",
+          },
         }
       );
       console.log("User email sent successfully:", userResponse);

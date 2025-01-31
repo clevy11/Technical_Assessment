@@ -90,31 +90,44 @@ document.addEventListener("DOMContentLoaded", function () {
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "New RICA Import Permit Application",
           from_name: "RICA Import Permit System",
+          to_name: "Administrator",
           to_email: "p.touko@irembo.com",
           reply_to: formObject.email,
+          subject: "New RICA Import Permit Application",
           message: `
-Business Owner Details:
-- Citizenship: ${formObject.citizenship}
-- Phone: +250${formObject.phone}
-- Email: ${formObject.email}
-- Province: ${formObject.ownerProvince}
+<div style="font-family: Arial, sans-serif;">
+    <h3>Business Owner Details:</h3>
+    <ul>
+        <li>Citizenship: ${formObject.citizenship}</li>
+        <li>Phone: +250${formObject.phone}</li>
+        <li>Email: ${formObject.email}</li>
+        <li>Province: ${formObject.ownerProvince}</li>
+    </ul>
 
-Business Details:
-- Business Type: ${formObject.businessType}
-- Company Name: ${formObject.companyName}
-- TIN Number: ${formObject.tinNumber}
-- Registration Date: ${formObject.registrationDate}
-- Business Province: ${formObject.businessProvince}
+    <h3>Business Details:</h3>
+    <ul>
+        <li>Business Type: ${formObject.businessType}</li>
+        <li>Company Name: ${formObject.companyName}</li>
+        <li>TIN Number: ${formObject.tinNumber}</li>
+        <li>Registration Date: ${formObject.registrationDate}</li>
+        <li>Business Province: ${formObject.businessProvince}</li>
+    </ul>
 
-Product Information:
-- Purpose of Importation: ${formObject.importPurpose}
-- Product Category: ${formObject.productCategory}
-- Weight: ${formObject.weight} ${formObject.weightUnit}
-- Quantity: ${formObject.quantity}
-- Description: ${formObject.productDescription}
-`,
+    <h3>Product Information:</h3>
+    <ul>
+        <li>Purpose of Importation: ${formObject.importPurpose}</li>
+        <li>Product Category: ${formObject.productCategory}</li>
+        <li>Weight: ${formObject.weight} ${formObject.weightUnit}</li>
+        <li>Quantity: ${formObject.quantity}</li>
+        <li>Description: ${formObject.productDescription}</li>
+    </ul>
+</div>`,
+          template_params: {
+            email_service: "gmail",
+            email_type: "notification",
+            priority: "high",
+          },
         }
       );
       console.log("Admin email sent successfully:", adminResponse);
@@ -124,40 +137,54 @@ Product Information:
         "service_5t0h6p1",
         "template_s0r60zg",
         {
-          subject: "Your RICA Import Permit Application",
           from_name: "RICA Import Permit System",
+          to_name: formObject.email.split("@")[0],
           to_email: formObject.email,
           reply_to: "p.touko@irembo.com",
+          subject: "Your RICA Import Permit Application Confirmation",
           message: `
-Dear Applicant,
+<div style="font-family: Arial, sans-serif;">
+    <h3>Business Owner Details:</h3>
+    <ul>
+        <li>Citizenship: ${formObject.citizenship}</li>
+        <li>Phone: +250${formObject.phone}</li>
+        <li>Email: ${formObject.email}</li>
+        <li>Province: ${formObject.ownerProvince}</li>
+    </ul>
+
+    <h3>Business Details:</h3>
+    <ul>
+        <li>Business Type: ${formObject.businessType}</li>
+        <li>Company Name: ${formObject.companyName}</li>
+        <li>TIN Number: ${formObject.tinNumber}</li>
+        <li>Registration Date: ${formObject.registrationDate}</li>
+        <li>Business Province: ${formObject.businessProvince}</li>
+    </ul>
+
+    <h3>Product Information:</h3>
+    <ul>
+        <li>Purpose of Importation: ${formObject.importPurpose}</li>
+        <li>Product Category: ${formObject.productCategory}</li>
+        <li>Weight: ${formObject.weight} ${formObject.weightUnit}</li>
+        <li>Quantity: ${formObject.quantity}</li>
+        <li>Description: ${formObject.productDescription}</li>
+    </ul>
+</div>
+
+Dear ${formObject.email.split("@")[0]},
 
 Thank you for submitting your RICA Import Permit application. Here are your application details:
-
-Business Owner Details:
-- Citizenship: ${formObject.citizenship}
-- Phone: +250${formObject.phone}
-- Email: ${formObject.email}
-- Province: ${formObject.ownerProvince}
-
-Business Details:
-- Business Type: ${formObject.businessType}
-- Company Name: ${formObject.companyName}
-- TIN Number: ${formObject.tinNumber}
-- Registration Date: ${formObject.registrationDate}
-- Business Province: ${formObject.businessProvince}
-
-Product Information:
-- Purpose of Importation: ${formObject.importPurpose}
-- Product Category: ${formObject.productCategory}
-- Weight: ${formObject.weight} ${formObject.weightUnit}
-- Quantity: ${formObject.quantity}
-- Description: ${formObject.productDescription}
 
 Your application has been received and is being processed. We will contact you if we need any additional information.
 
 Best regards,
 RICA Import Permit Team
 `,
+          template_params: {
+            email_service: "gmail",
+            email_type: "confirmation",
+            priority: "high",
+          },
         }
       );
       console.log("User email sent successfully:", userResponse);
